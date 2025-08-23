@@ -59,12 +59,12 @@ export function PublicCitySearch({ onCitySelect }: PublicCitySearchProps) {
   return (
     <div className="relative mx-auto w-full max-w-xl">
       <div className="relative">
-        <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+        <Search className="-translate-y-1/2 absolute top-1/2 left-5 h-5 w-5 text-muted-foreground" />
         <Input
-          className="h-14 w-full rounded-full border bg-background pl-14 pr-6 text-lg placeholder:text-muted-foreground focus-visible:ring-2"
+          className="h-14 w-full rounded-full border bg-background pr-6 pl-14 text-lg placeholder:text-muted-foreground focus-visible:ring-2"
           onBlur={() => setTimeout(() => setIsOpen(false), 200)}
-          onFocus={() => setIsOpen(query.length >= 3)}
           onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsOpen(query.length >= 3)}
           placeholder="Search for a city..."
           value={query}
         />
@@ -100,8 +100,8 @@ export function PublicCitySearch({ onCitySelect }: PublicCitySearchProps) {
                   <div className="p-2">
                     {cities.map((city) => (
                       <div
-                        key={city.id}
                         className="flex cursor-pointer items-center gap-2 rounded-md p-2 hover:bg-accent"
+                        key={city.id}
                         onClick={() => handleCitySelect(city)}
                       >
                         <MapPin className="h-4 w-4 text-muted-foreground" />

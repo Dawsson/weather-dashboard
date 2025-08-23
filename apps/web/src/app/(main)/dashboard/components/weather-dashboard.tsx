@@ -1,7 +1,7 @@
 'use client';
 
-import { Cloud } from 'lucide-react';
-import { useState } from 'react';
+import { Sun } from 'lucide-react';
+import { parseAsFloat, useQueryState } from 'nuqs';
 import { CurrentWeatherDisplay } from './current-weather-display';
 import { PublicCitySearch } from './public-city-search';
 
@@ -15,38 +15,40 @@ type City = {
 };
 
 export function WeatherDashboard() {
-  const [selectedCity, setSelectedCity] = useState<City | null>(null);
+  const [lat, setLat] = useQueryState('lat', parseAsFloat);
+  const [lon, setLon] = useQueryState('lon', parseAsFloat);
 
-  // Simple city selection without URL state for now
+  // We have coordinates but need to create a city object for display
+  // The CurrentWeatherDisplay will handle fetching weather data with these coords
+  const selectedCity = lat && lon ? { lat, lon } : null;
+
+  // City selection with URL state persistence
   const handleCitySelect = (city: City) => {
-    setSelectedCity(city);
+    setLat(city.lat);
+    setLon(city.lon);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-12 text-center">
-        <h1 className="mb-4 font-semibold text-3xl tracking-tight sm:text-4xl">
-          Weather
-        </h1>
-      </div>
-
+    <div className="px-4 py-10 sm:px-6 lg:px-8">
       <div className="mb-8">
         <PublicCitySearch onCitySelect={handleCitySelect} />
       </div>
 
       {selectedCity ? (
-        <CurrentWeatherDisplay city={selectedCity} />
+        <CurrentWeatherDisplay coordinates={selectedCity} />
       ) : (
-        <div className="flex min-h-[50vh] items-center justify-center">
+        <div className="flex min-h-[30vh] items-center justify-center">
           <div className="text-center">
             <div className="mb-6">
-              <Cloud className="mx-auto h-12 w-12 text-muted-foreground/40" strokeWidth={1.5} />
+              <div className="relative mx-auto flex h-16 w-16 items-center justify-center">
+                <Sun className="h-10 w-10 text-yellow-500" strokeWidth={1.5} />
+              </div>
             </div>
-            <h3 className="mb-2 text-lg font-medium text-foreground">
-              Check the weather
+            <h3 className="mb-2 font-semibold text-foreground text-lg">
+              Search for a city to get started
             </h3>
-            <p className="text-muted-foreground text-sm">
-              Enter a city name to get current conditions
+            <p className="mx-auto max-w-sm text-muted-foreground text-sm">
+              We’ll show you current conditions with a clean, readable layout.
             </p>
           </div>
         </div>

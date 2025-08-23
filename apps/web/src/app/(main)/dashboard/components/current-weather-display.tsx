@@ -1,51 +1,118 @@
 'use client';
 
 import { Alert, AlertDescription, AlertTitle } from '@repo/ui/components/alert';
+import { Button } from '@repo/ui/components/button';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from '@repo/ui/components/card';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle,
   Droplets,
   Eye,
   Gauge,
+  Heart,
   Moon,
   Sun,
   Thermometer,
   Wind,
 } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { orpc } from '@/utils/orpc-client';
+import { authClient } from '@/lib/auth-client';
 
-type City = {
-  id: string;
-  name: string;
-  country: string;
-  state?: string;
-  lat: number;
-  lon: number;
-};
 
 interface CurrentWeatherDisplayProps {
-  city: City;
+  coordinates: { lat: number; lon: number };
 }
 
-export function CurrentWeatherDisplay({ city }: CurrentWeatherDisplayProps) {
+export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProps) {
+  const [unit, setUnit] = useState<'C' | 'F'>('C');
+  const { data: user } = authClient.useSession();
+  const queryClient = useQueryClient();
+
   const {
     data: weather,
     isLoading,
     error,
   } = useQuery(
     orpc.weather.getCurrentWeather.queryOptions({
-      input: { lat: city.lat, lon: city.lon },
+      input: { lat: coordinates.lat, lon: coordinates.lon },
       staleTime: 5 * 60 * 1000, // 5 minutes
       refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
       retry: 3,
     })
   );
+
+  // For now, create a minimal city object from coordinates
+  // TODO: Add reverse geocoding API to get actual city name
+  const city = {
+    id: `${coordinates.lat},${coordinates.lon}`,
+    name: `${coordinates.lat.toFixed(4)}, ${coordinates.lon.toFixed(4)}`,
+    country: 'Location',
+    state: undefined,
+    lat: coordinates.lat,
+    lon: coordinates.lon,
+  };
+
+  // Get user's favorites
+  const { data: favorites = [] } = useQuery(
+    orpc.users.favorites.getFavorites.queryOptions({
+      enabled: !!user,
+      staleTime: 2 * 60 * 1000, // 2 minutes
+    })
+  );
+
+  const isFavorite = favorites.some(fav => fav.id === city.id);
+
+  // Add favorite mutation
+  const addFavoriteMutation = useMutation(
+    orpc.users.favorites.addFavorite.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: orpc.users.favorites.getFavorites.key(),
+        });
+        toast.success('Added to favorites');
+      },
+      onError: () => {
+        toast.error('Failed to add to favorites');
+      },
+    })
+  );
+
+  // Remove favorite mutation
+  const removeFavoriteMutation = useMutation(
+    orpc.users.favorites.removeFavorite.mutationOptions({
+      onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: orpc.users.favorites.getFavorites.key(),
+        });
+        toast.success('Removed from favorites');
+      },
+      onError: () => {
+        toast.error('Failed to remove from favorites');
+      },
+    })
+  );
+
+  const handleFavoriteToggle = () => {
+    if (isFavorite) {
+      removeFavoriteMutation.mutate({ cityId: city.id });
+    } else {
+      addFavoriteMutation.mutate({
+        id: city.id,
+        name: city.name,
+        country: city.country,
+        state: city.state,
+        lat: city.lat,
+        lon: city.lon,
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -99,6 +166,12 @@ export function CurrentWeatherDisplay({ city }: CurrentWeatherDisplayProps) {
   const currentWeather = weather.current;
   const tempCelsius = Math.round(currentWeather.temp);
   const feelsLikeCelsius = Math.round(currentWeather.feels_like);
+
+  const toF = (c: number) => Math.round((c * 9) / 5 + 32);
+  const toMph = (kmh: number) => Math.round(kmh * 0.621_371);
+
+  const displayTemp = unit === 'C' ? tempCelsius : toF(tempCelsius);
+  const displayFeels = unit === 'C' ? feelsLikeCelsius : toF(feelsLikeCelsius);
   const sunrise = new Date(currentWeather.sunrise! * 1000).toLocaleTimeString(
     [],
     {
@@ -115,79 +188,132 @@ export function CurrentWeatherDisplay({ city }: CurrentWeatherDisplayProps) {
   );
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
-      {/* Main Weather Card */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
+    <div className="mx-auto max-w-6xl space-y-8">
+      {/* Main Weather Panel */}
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b">
+          <CardTitle className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-2xl">{city.name}</h2>
-              <p className="font-normal text-muted-foreground">
+              <h2 className="font-semibold text-3xl leading-tight sm:text-4xl">
+                {city.name}
+              </h2>
+              <p className="text-muted-foreground">
                 {city.state && `${city.state}, `}
                 {city.country}
               </p>
             </div>
-            <div className="text-right">
-              <div className="font-bold text-4xl">{tempCelsius}°C</div>
-              <p className="text-muted-foreground">
-                Feels like {feelsLikeCelsius}°C
-              </p>
+            <div className="flex flex-col items-start gap-2 sm:items-end">
+              <div className="flex items-center gap-3">
+                <div className="font-bold text-5xl tracking-tight sm:text-6xl">
+                  {displayTemp}°{unit}
+                </div>
+                {user && (
+                  <Button
+                    onClick={handleFavoriteToggle}
+                    size="sm"
+                    variant={isFavorite ? 'default' : 'outline'}
+                    className="mt-2"
+                    disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
+                  >
+                    <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+                  </Button>
+                )}
+              </div>
+              <div className="flex items-center gap-2">
+                <p className="text-muted-foreground">
+                  Feels like {displayFeels}°{unit}
+                </p>
+                <span className="text-muted-foreground">•</span>
+                <div className="inline-flex rounded-md border bg-background p-0.5">
+                  <Button
+                    onClick={() => setUnit('C')}
+                    size="sm"
+                    variant={unit === 'C' ? 'default' : 'ghost'}
+                  >
+                    °C
+                  </Button>
+                  <Button
+                    onClick={() => setUnit('F')}
+                    size="sm"
+                    variant={unit === 'F' ? 'default' : 'ghost'}
+                  >
+                    °F
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Weather Description */}
-          <div className="text-center">
-            <div className="mb-2 text-xl capitalize">
-              {currentWeather.weather[0]?.description}
+        <CardContent className="space-y-8 pt-6">
+          {/* Summary row */}
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <div className="text-center sm:text-left">
+              <div className="mb-1 text-2xl capitalize">
+                {currentWeather.weather[0]?.description}
+              </div>
+              <p className="text-muted-foreground text-sm">
+                Updated {new Date().toLocaleString()}
+              </p>
             </div>
-            <p className="text-muted-foreground text-sm">
-              Updated: {new Date().toLocaleString()}
-            </p>
+            {/* Big thermometer icon cluster */}
+            <div className="hidden items-center gap-3 sm:flex">
+              <div className="rounded-full bg-primary/10 p-3 ring-1 ring-primary/20">
+                <Thermometer className="h-6 w-6 text-primary" />
+              </div>
+              <div className="rounded-full bg-yellow-100 p-3 dark:bg-yellow-900/40">
+                <Sun className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
+              </div>
+            </div>
           </div>
 
-          {/* Weather Details Grid */}
+          {/* Key metrics - larger, more breathable */}
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900">
-                <Droplets className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+            <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+              <div className="rounded-full bg-blue-100 p-2.5 dark:bg-blue-900/40">
+                <Droplets className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Humidity</p>
-                <p className="font-semibold">{currentWeather.humidity}%</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-gray-100 p-2 dark:bg-gray-800">
-                <Wind className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-              </div>
-              <div>
-                <p className="text-muted-foreground text-sm">Wind Speed</p>
-                <p className="font-semibold">
-                  {Math.round(currentWeather.wind_speed * 3.6)} km/h
+                <p className="font-semibold text-xl">
+                  {currentWeather.humidity}%
                 </p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
-              <div className="rounded-full bg-orange-100 p-2 dark:bg-orange-900">
-                <Gauge className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+            <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+              <div className="rounded-full bg-gray-100 p-2.5 dark:bg-gray-800/60">
+                <Wind className="h-6 w-6 text-gray-600 dark:text-gray-300" />
+              </div>
+              <div>
+                <p className="text-muted-foreground text-sm">Wind</p>
+                <p className="font-semibold text-xl">
+                  {unit === 'C'
+                    ? `${Math.round(currentWeather.wind_speed * 3.6)} km/h`
+                    : `${toMph(Math.round(currentWeather.wind_speed * 3.6))} mph`}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+              <div className="rounded-full bg-orange-100 p-2.5 dark:bg-orange-900/40">
+                <Gauge className="h-6 w-6 text-orange-600 dark:text-orange-400" />
               </div>
               <div>
                 <p className="text-muted-foreground text-sm">Pressure</p>
-                <p className="font-semibold">{currentWeather.pressure} hPa</p>
+                <p className="font-semibold text-xl">
+                  {currentWeather.pressure} hPa
+                </p>
               </div>
             </div>
 
             {currentWeather.visibility && (
-              <div className="flex items-center gap-3">
-                <div className="rounded-full bg-purple-100 p-2 dark:bg-purple-900">
-                  <Eye className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+              <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
+                <div className="rounded-full bg-purple-100 p-2.5 dark:bg-purple-900/40">
+                  <Eye className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Visibility</p>
-                  <p className="font-semibold">
+                  <p className="font-semibold text-xl">
                     {Math.round(currentWeather.visibility / 1000)} km
                   </p>
                 </div>
@@ -195,26 +321,26 @@ export function CurrentWeatherDisplay({ city }: CurrentWeatherDisplayProps) {
             )}
           </div>
 
-          {/* Sun Times */}
+          {/* Sun times - full width row */}
           {currentWeather.sunrise && currentWeather.sunset && (
-            <div className="grid grid-cols-2 gap-6 border-t pt-4">
-              <div className="flex items-center gap-3">
-                <div className="rounded-full bg-yellow-100 p-2 dark:bg-yellow-900">
-                  <Sun className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
+            <div className="grid grid-cols-1 gap-4 rounded-lg border bg-card p-4 sm:grid-cols-2">
+              <div className="flex items-center gap-4">
+                <div className="rounded-full bg-yellow-100 p-2.5 dark:bg-yellow-900/40">
+                  <Sun className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Sunrise</p>
-                  <p className="font-semibold">{sunrise}</p>
+                  <p className="font-semibold text-xl">{sunrise}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3">
-                <div className="rounded-full bg-indigo-100 p-2 dark:bg-indigo-900">
-                  <Moon className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
+              <div className="flex items-center gap-4">
+                <div className="rounded-full bg-indigo-100 p-2.5 dark:bg-indigo-900/40">
+                  <Moon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Sunset</p>
-                  <p className="font-semibold">{sunset}</p>
+                  <p className="font-semibold text-xl">{sunset}</p>
                 </div>
               </div>
             </div>
