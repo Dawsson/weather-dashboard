@@ -1,0 +1,40 @@
+{
+  "name": "Template",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "apps/*",
+      "packages/*"
+    ],
+    "catalog": {
+      "zod": "4.0.17",
+      "better-auth": "1.3.6",
+      "@t3-oss/env-core": "0.13.8"
+    }
+  },
+  "scripts": {
+    "format": "bunx ultracite@latest format",
+    "lint": "bunx ultracite@latest lint",
+    "lint:fix": "bunx ultracite@latest format",
+    "typecheck": "turbo typecheck",
+    "typecheck:api": "tsc --noEmit -p apps/api",
+    "typecheck:web": "tsc --noEmit -p apps/web",
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "dev:native": "turbo -F native dev",
+    "start:api": "turbo start --filter=@repo/api",
+    "start:web": "turbo start --filter=@repo/web"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.1.4",
+    "turbo": "^2.5.5",
+    "ultracite": "5.1.2"
+  },
+  "packageManager": "bun@1.2.20",
+  "dependencies": {
+    "@types/node-fetch": "^2.6.13",
+    "node-fetch": "^3.3.2",
+    "nuqs": "^2.5.0",
+    "use-debounce": "^10.0.5"
+  }
+}

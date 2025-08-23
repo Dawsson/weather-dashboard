@@ -1,0 +1,33 @@
+{
+  "name": "@repo/api",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "typecheck": "tsc --noEmit",
+    "compile": "bun build --compile --minify --sourcemap --bytecode ./src/index.ts --outfile api",
+    "dev": "bun run --env-file=../../.env --watch src/index.ts",
+    "start": "bun run --env-file=../../.env src/index.ts"
+  },
+  "dependencies": {
+    "@azure/communication-email": "^1.0.0",
+    "@orpc/json-schema": "^1.8.4",
+    "@orpc/openapi": "^1.8.4",
+    "@orpc/server": "^1.8.4",
+    "@orpc/zod": "^1.8.4",
+    "@repo/shared": "workspace:*",
+    "@scalar/hono-api-reference": "^0.9.13",
+    "@t3-oss/env-core": "catalog:",
+    "@zodyac/zod-mongoose": "^4.1.0",
+    "better-auth": "catalog:",
+    "hono": "^4.9.1",
+    "ioredis": "^5.6.1",
+    "mongoose": "^8.16.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "tsc-alias": "^1.8.16",
+    "typescript": "^5.8.3",
+    "@types/bun": "^1.2.16"
+  }
+}
