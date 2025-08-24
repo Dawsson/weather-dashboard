@@ -22,15 +22,16 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { orpc } from '@/utils/orpc-client';
 import { authClient } from '@/lib/auth-client';
-
+import { orpc } from '@/utils/orpc-client';
 
 interface CurrentWeatherDisplayProps {
   coordinates: { lat: number; lon: number };
 }
 
-export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProps) {
+export function CurrentWeatherDisplay({
+  coordinates,
+}: CurrentWeatherDisplayProps) {
   const [unit, setUnit] = useState<'C' | 'F'>('C');
   const { data: user } = authClient.useSession();
   const queryClient = useQueryClient();
@@ -59,7 +60,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
     lon: coordinates.lon,
   };
 
-  // Get user's favorites
   const { data: favorites = [] } = useQuery(
     orpc.users.favorites.getFavorites.queryOptions({
       enabled: !!user,
@@ -67,9 +67,8 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
     })
   );
 
-  const isFavorite = favorites.some(fav => fav.id === city.id);
+  const isFavorite = favorites.some((fav) => fav.id === city.id);
 
-  // Add favorite mutation
   const addFavoriteMutation = useMutation(
     orpc.users.favorites.addFavorite.mutationOptions({
       onSuccess: () => {
@@ -84,7 +83,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
     })
   );
 
-  // Remove favorite mutation
   const removeFavoriteMutation = useMutation(
     orpc.users.favorites.removeFavorite.mutationOptions({
       onSuccess: () => {
@@ -189,7 +187,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
 
   return (
     <div className="mx-auto max-w-6xl space-y-8">
-      {/* Main Weather Panel */}
       <Card className="overflow-hidden">
         <CardHeader className="border-b">
           <CardTitle className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -209,13 +206,18 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
                 </div>
                 {user && (
                   <Button
+                    className="mt-2"
+                    disabled={
+                      addFavoriteMutation.isPending ||
+                      removeFavoriteMutation.isPending
+                    }
                     onClick={handleFavoriteToggle}
                     size="sm"
                     variant={isFavorite ? 'default' : 'outline'}
-                    className="mt-2"
-                    disabled={addFavoriteMutation.isPending || removeFavoriteMutation.isPending}
                   >
-                    <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
+                    <Heart
+                      className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`}
+                    />
                   </Button>
                 )}
               </div>
@@ -245,7 +247,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-8 pt-6">
-          {/* Summary row */}
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div className="text-center sm:text-left">
               <div className="mb-1 text-2xl capitalize">
@@ -255,7 +256,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
                 Updated {new Date().toLocaleString()}
               </p>
             </div>
-            {/* Big thermometer icon cluster */}
             <div className="hidden items-center gap-3 sm:flex">
               <div className="rounded-full bg-primary/10 p-3 ring-1 ring-primary/20">
                 <Thermometer className="h-6 w-6 text-primary" />
@@ -266,7 +266,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
             </div>
           </div>
 
-          {/* Key metrics - larger, more breathable */}
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             <div className="flex items-center gap-4 rounded-lg border bg-card p-4">
               <div className="rounded-full bg-blue-100 p-2.5 dark:bg-blue-900/40">
@@ -321,7 +320,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
             )}
           </div>
 
-          {/* Sun times - full width row */}
           {currentWeather.sunrise && currentWeather.sunset && (
             <div className="grid grid-cols-1 gap-4 rounded-lg border bg-card p-4 sm:grid-cols-2">
               <div className="flex items-center gap-4">
@@ -348,7 +346,6 @@ export function CurrentWeatherDisplay({ coordinates }: CurrentWeatherDisplayProp
         </CardContent>
       </Card>
 
-      {/* Weather Alerts */}
       {weather.alerts && weather.alerts.length > 0 && (
         <Alert>
           <AlertTriangle className="h-4 w-4" />

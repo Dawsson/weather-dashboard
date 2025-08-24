@@ -12,23 +12,18 @@ export class WeatherService {
   private readonly baseUrl = 'https://api.openweathermap.org';
   private readonly apiKey = env.OPENWEATHERMAP_API_KEY;
 
-  /**
-   * Get current weather data for a location
-   */
   async getCurrentWeather({ lat, lon }: WeatherRequest): Promise<WeatherData> {
     console.log('Getting current weather for:', lat, lon);
 
     const cacheKey = `weather:v2:${lat.toFixed(4)}:${lon.toFixed(4)}`;
 
     try {
-      // Check cache first (1 hour TTL)
       const cached = await redis.get(cacheKey);
       if (cached) {
         console.log('Returning cached weather data');
         return JSON.parse(cached) as WeatherData;
       }
 
-      // Fetch from OpenWeatherMap Current Weather API (completely free)
       const url = `${this.baseUrl}/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
 
       console.log('Making request to:', url);
@@ -58,12 +53,11 @@ export class WeatherService {
         JSON.stringify(rawData, null, 2)
       );
 
-      // Transform current weather API response to our schema
       const data: WeatherData = {
         lat: Number(rawData.coord.lat),
         lon: Number(rawData.coord.lon),
-        timezone: 'UTC', // Current weather API doesn't provide timezone
-        timezone_offset: 0, // Current weather API doesn't provide timezone offset
+        timezone: 'UTC',
+        timezone_offset: 0,
         current: {
           dt: Number(rawData.dt),
           sunrise: rawData.sys?.sunrise
@@ -74,8 +68,8 @@ export class WeatherService {
           feels_like: Number(rawData.main.feels_like),
           pressure: Number(rawData.main.pressure),
           humidity: Number(rawData.main.humidity),
-          dew_point: Number(rawData.main.temp), // Approximate with temp since not available
-          uvi: 0, // Current weather API doesn't provide UV index
+          dew_point: Number(rawData.main.temp),
+          uvi: 0,
           clouds: Number(rawData.clouds?.all || 0),
           visibility: rawData.visibility
             ? Number(rawData.visibility)
@@ -93,14 +87,12 @@ export class WeatherService {
         },
       };
 
-      // Cache for 1 hour (3600 seconds)
       await redis.setex(cacheKey, 3600, JSON.stringify(data));
 
       return data;
     } catch (error) {
       console.error('Error fetching weather data:', error);
 
-      // Try to return stale cached data if API fails
       const staleKey = `weather:stale:${lat.toFixed(4)}:${lon.toFixed(4)}`;
       const staleData = await redis.get(staleKey);
       if (staleData) {
@@ -112,20 +104,15 @@ export class WeatherService {
     }
   }
 
-  /**
-   * Search for cities using geocoding API
-   */
   async searchCities({ query, limit = 5 }: CitySearchRequest): Promise<City[]> {
     const cacheKey = `geocoding:${query.toLowerCase()}:${limit}`;
 
     try {
-      // Check cache first (24 hour TTL for geocoding)
       const cached = await redis.get(cacheKey);
       if (cached) {
         return JSON.parse(cached) as City[];
       }
 
-      // Fetch from OpenWeatherMap Geocoding API
       const url = `${this.baseUrl}/geo/1.0/direct?q=${encodeURIComponent(query)}&limit=${limit}&appid=${this.apiKey}`;
 
       const response = await fetch(url);
@@ -141,7 +128,6 @@ export class WeatherService {
 
       const rawData = (await response.json()) as any[];
 
-      // Transform to our schema format
       const cities: City[] = rawData.map((item) => ({
         id: `${item.lat.toFixed(4)}_${item.lon.toFixed(4)}`,
         name: item.name,
@@ -152,7 +138,6 @@ export class WeatherService {
         state: item.state,
       }));
 
-      // Cache for 24 hours (86400 seconds)
       await redis.setex(cacheKey, 86_400, JSON.stringify(cities));
 
       return cities;
@@ -162,9 +147,6 @@ export class WeatherService {
     }
   }
 
-  /**
-   * Get weather data for multiple locations (for batch requests)
-   */
   async getBatchWeather(locations: WeatherRequest[]): Promise<WeatherData[]> {
     const promises = locations.map((location) =>
       this.getCurrentWeather(location)

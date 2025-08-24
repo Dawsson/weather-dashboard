@@ -30,10 +30,8 @@ export function PublicCitySearch({ onCitySelect }: PublicCitySearchProps) {
     setMounted(true);
   }, []);
 
-  // Debounce the search query by 300ms
   const [debouncedQuery] = useDebounce(query, 300);
 
-  // Only search when mounted and debounced query has at least 3 characters
   const { data: cities = [], isLoading } = useQuery(
     orpc.weather.searchCities.queryOptions({
       input: {

@@ -18,11 +18,8 @@ export function WeatherDashboard() {
   const [lat, setLat] = useQueryState('lat', parseAsFloat);
   const [lon, setLon] = useQueryState('lon', parseAsFloat);
 
-  // We have coordinates but need to create a city object for display
-  // The CurrentWeatherDisplay will handle fetching weather data with these coords
   const selectedCity = lat && lon ? { lat, lon } : null;
 
-  // City selection with URL state persistence
   const handleCitySelect = (city: City) => {
     setLat(city.lat);
     setLon(city.lon);

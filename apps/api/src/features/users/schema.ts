@@ -2,7 +2,6 @@ import { type Document, Schema } from 'mongoose';
 import { database } from '@/shared/database';
 import { standardToJSON } from '@/shared/mongoose-transforms';
 
-// Favorite city interface
 export interface FavoriteCity {
   id: string;
   name: string;
@@ -13,7 +12,6 @@ export interface FavoriteCity {
   addedAt: Date;
 }
 
-// User interface extending Document
 export interface User extends Document {
   name: string;
   email: string;
@@ -24,7 +22,6 @@ export interface User extends Document {
   updatedAt: Date;
 }
 
-// Favorite city schema
 const FavoriteCitySchema = new Schema<FavoriteCity>(
   {
     id: { type: String, required: true },
@@ -54,6 +51,5 @@ const UserSchema = new Schema<User>(
   }
 );
 
-// Export the model
 export const UserModel = database.model<User>('user', UserSchema);
 export { UserSchema };

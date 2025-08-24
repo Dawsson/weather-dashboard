@@ -2,7 +2,6 @@ import { oc } from '@orpc/contract';
 import { z } from 'zod';
 import { ZodUser } from './types';
 
-// Weather schemas for contract
 const WeatherConditionSchema = z.object({
   id: z.number(),
   main: z.string(),
