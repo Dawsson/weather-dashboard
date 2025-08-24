@@ -49,7 +49,7 @@ const UserSchema = new Schema<User>(
   {
     timestamps: true,
     versionKey: false,
-    collection: 'users',
+    collection: 'user',
     toJSON: standardToJSON,
   }
 );

@@ -5,7 +5,7 @@ import type { Context } from './context';
 export const os = implement(contract).$context<Context>();
 
 const authMiddleware = os.middleware(({ context, next }) => {
-  if (!context.session) {
+  if (!context.session?.session.userId) {
     throw new ORPCError('UNAUTHORIZED');
   }
 

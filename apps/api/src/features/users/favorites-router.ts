@@ -6,7 +6,7 @@ const favoritesService = new FavoritesService();
 export const favoritesRouter = {
   getFavorites: protectedProcedure.users.favorites.getFavorites.handler(
     async ({ context }) => {
-      const userId = context.session!.session.userId;
+      const userId = context.session?.user.id
       return await favoritesService.getFavorites(userId);
     }
   ),
