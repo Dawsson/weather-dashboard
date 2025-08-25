@@ -256,14 +256,6 @@ export function CurrentWeatherDisplay({
                 Updated {new Date().toLocaleString()}
               </p>
             </div>
-            <div className="hidden items-center gap-3 sm:flex">
-              <div className="rounded-full bg-primary/10 p-3 ring-1 ring-primary/20">
-                <Thermometer className="h-6 w-6 text-primary" />
-              </div>
-              <div className="rounded-full bg-yellow-100 p-3 dark:bg-yellow-900/40">
-                <Sun className="h-6 w-6 text-yellow-600 dark:text-yellow-400" />
-              </div>
-            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
