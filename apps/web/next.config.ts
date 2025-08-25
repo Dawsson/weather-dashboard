@@ -7,15 +7,6 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-
-  rewrites: async () => {
-    return [
-      {
-        source: '/docs/:path*',
-        destination: 'https://weather-api.dawson.gg/docs/:path*',
-      },
-    ];
-  },
 };
 
 export default nextConfig;
