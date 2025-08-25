@@ -9,10 +9,14 @@ const nextConfig: NextConfig = {
   },
 
   rewrites: async () => {
+    const apiUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://weather-api.dawson.gg' 
+      : 'http://localhost:3001';
+    
     return [
       {
         source: '/docs/:path*',
-        destination: `${process.env.NEXT_PUBLIC_API_URL}/docs/:path*`,
+        destination: `${apiUrl}/docs/:path*`,
       },
     ];
   },
