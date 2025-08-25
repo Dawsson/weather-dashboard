@@ -1,4 +1,3 @@
-import { countingRouter } from '@/features/counting';
 import { usersRouter } from '@/features/users';
 import { weatherRouter } from '@/features/weather';
 import { publicProcedure } from '@/lib/orpc';
@@ -11,7 +10,6 @@ export const appRouter = {
     };
   }),
 
-  counting: countingRouter,
   users: usersRouter,
   weather: weatherRouter,
 };

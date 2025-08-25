@@ -5,11 +5,11 @@ A modern full-stack weather dashboard application that allows users to search fo
 ## Features
 
 ### Core Weather Functionality
-- 🌤️ **Real-time Weather Data** - Current conditions from OpenWeatherMap API
-- 🔍 **Smart City Search** - Debounced search with autocomplete suggestions
-- ⭐ **Favorite Cities** - Save and manage your favorite locations
-- 🌡️ **Dual Temperature Units** - Toggle between Celsius and Fahrenheit
-- 📱 **Responsive Design** - Mobile-first responsive interface
+- **Real-time Weather Data** - Current conditions from OpenWeatherMap API
+- **Smart City Search** - Debounced search with autocomplete suggestions
+- **Favorite Cities** - Save and manage your favorite locations
+- **Dual Temperature Units** - Toggle between Celsius and Fahrenheit
+- **Responsive Design** - Mobile-first responsive interface
 
 ### Technical Features
 - **TypeScript** - Full type safety across the stack
@@ -56,7 +56,7 @@ A modern full-stack weather dashboard application that allows users to search fo
 5. **Access the application**
    - Frontend: [http://localhost:3000](http://localhost:3000)
    - API: [http://localhost:3001](http://localhost:3001)
-   - API Documentation: [http://localhost:3001/docs](http://localhost:3001/docs)
+   - **API Documentation**: [http://localhost:3001/docs](http://localhost:3001/docs) (Interactive Scalar UI)
 
 ### Using Docker
 
@@ -133,10 +133,16 @@ All environment variables are validated using Zod schemas. Copy `.env.example` t
 
 ## API Documentation
 
-The API provides comprehensive OpenAPI documentation:
+The API provides comprehensive OpenAPI documentation with interactive Scalar UI:
 
-- **Interactive Documentation**: [http://localhost:3001/docs](http://localhost:3001/docs) (Scalar UI)
-- **OpenAPI JSON**: [http://localhost:3001/openapi.json](http://localhost:3001/openapi.json)
+- **Interactive API Documentation**: [http://localhost:3001/docs](http://localhost:3001/docs)
+- **OpenAPI JSON Specification**: [http://localhost:3001/openapi.json](http://localhost:3001/openapi.json)
+
+The interactive documentation includes:
+- Complete endpoint documentation organized by feature (Health, Weather, User Favorites)
+- Request/response schemas with detailed field descriptions
+- Authentication requirements and examples
+- Live API testing interface
 
 ### Key API Endpoints
 

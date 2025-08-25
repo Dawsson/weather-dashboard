@@ -35,26 +35,4 @@ export const favoritesRouter = {
       return true;
     }
   ),
-
-  reorderFavorites: protectedProcedure.users.favorites.reorderFavorites.handler(
-    async ({ input, context }) => {
-      const userId = context.session?.session.userId;
-      if (!userId) {
-        throw new Error('User ID not found');
-      }
-      await favoritesService.reorderFavorites(userId, input.cityIds);
-      return true;
-    }
-  ),
-
-  clearFavorites: protectedProcedure.users.favorites.clearFavorites.handler(
-    async ({ context }) => {
-      const userId = context.session?.session.userId;
-      if (!userId) {
-        throw new Error('User ID not found');
-      }
-      await favoritesService.clearFavorites(userId);
-      return true;
-    }
-  ),
 };

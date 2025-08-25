@@ -62,46 +62,4 @@ export class FavoritesService {
 
     return user;
   }
-
-  async reorderFavorites(userId: string, cityIds: string[]): Promise<User> {
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      throw new APIError('NOT_FOUND', { message: 'User not found' });
-    }
-
-    const currentCityIds = user.favoriteCities.map((fav) => fav.id);
-    const missingIds = cityIds.filter((id) => !currentCityIds.includes(id));
-    const extraIds = currentCityIds.filter((id) => !cityIds.includes(id));
-
-    if (missingIds.length > 0 || extraIds.length > 0) {
-      throw new APIError('BAD_REQUEST', {
-        message: 'Invalid city IDs provided for reordering',
-      });
-    }
-
-    const reorderedFavorites: FavoriteCity[] = [];
-    for (const cityId of cityIds) {
-      const city = user.favoriteCities.find((fav) => fav.id === cityId);
-      if (city) {
-        reorderedFavorites.push(city);
-      }
-    }
-
-    user.favoriteCities = reorderedFavorites;
-    await user.save();
-
-    return user;
-  }
-
-  async clearFavorites(userId: string): Promise<User> {
-    const user = await UserModel.findById(userId);
-    if (!user) {
-      throw new APIError('NOT_FOUND', { message: 'User not found' });
-    }
-
-    user.favoriteCities = [];
-    await user.save();
-
-    return user;
-  }
 }

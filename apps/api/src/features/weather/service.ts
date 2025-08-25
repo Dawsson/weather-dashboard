@@ -129,10 +129,4 @@ export class WeatherService {
     return cities;
   }
 
-  async getBatchWeather(locations: WeatherRequest[]): Promise<WeatherData[]> {
-    const promises = locations.map((location) =>
-      this.getCurrentWeather(location)
-    );
-    return await Promise.all(promises);
-  }
 }

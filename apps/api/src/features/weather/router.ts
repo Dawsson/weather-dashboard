@@ -15,10 +15,4 @@ export const weatherRouter = {
       return await weatherService.searchCities(input);
     }
   ),
-
-  getBatchWeather: publicProcedure.weather.getBatchWeather.handler(
-    async ({ input }) => {
-      return await weatherService.getBatchWeather(input);
-    }
-  ),
 };

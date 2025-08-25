@@ -95,7 +95,7 @@ router.use('/rpc/*', async (c, next) => {
   await next();
 });
 
-router.get('/docs', Scalar({ url: '/openapi.json' }));
+router.get('/docs', Scalar({ url: `${env.NEXT_PUBLIC_API_URL}/openapi.json` }));
 router.get('/openapi.json', (c) => {
   return c.json(spec);
 });
