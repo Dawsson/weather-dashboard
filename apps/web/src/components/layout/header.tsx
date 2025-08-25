@@ -5,6 +5,7 @@ import { Button } from '@repo/ui/components/button';
 import { Cloud } from 'lucide-react';
 import Link from 'next/link';
 import { ModeToggle } from '@/components/mode-toggle';
+import { TemperatureUnitToggle } from '@/components/temperature-unit-toggle';
 
 export default function Header({
   isAuthenticated,
@@ -35,6 +36,7 @@ export default function Header({
 
         {/* Right: Controls */}
         <div className="flex items-center gap-2">
+          <TemperatureUnitToggle />
           <ModeToggle />
           {isAuthenticated ? (
             <UserButton align="end" size={'icon'} />

@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { authClient } from '@/lib/auth-client';
+import { TemperatureUnitProvider } from '@/hooks/use-temperature-unit';
 import { ThemeProvider } from './theme-provider';
 
 function makeQueryClient() {
@@ -48,20 +49,22 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       enableSystem
     >
-      <AuthUIProvider
-        authClient={authClient}
-        Link={Link}
-        navigate={router.push}
-        onSessionChange={() => router.refresh()}
-        replace={router.replace}
-      >
-        <QueryClientProvider client={queryClient}>
-          <NuqsAdapter>{children}</NuqsAdapter>
+      <TemperatureUnitProvider>
+        <AuthUIProvider
+          authClient={authClient}
+          Link={Link}
+          navigate={router.push}
+          onSessionChange={() => router.refresh()}
+          replace={router.replace}
+        >
+          <QueryClientProvider client={queryClient}>
+            <NuqsAdapter>{children}</NuqsAdapter>
 
-          <ReactQueryDevtools />
-          <Toaster richColors />
-        </QueryClientProvider>
-      </AuthUIProvider>
+            <ReactQueryDevtools />
+            <Toaster richColors />
+          </QueryClientProvider>
+        </AuthUIProvider>
+      </TemperatureUnitProvider>
     </ThemeProvider>
   );
 }

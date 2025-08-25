@@ -20,9 +20,9 @@ import {
   Thermometer,
   Wind,
 } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
-import { useTemperatureUnit } from '@/hooks/use-temperature-unit';
 import { orpc } from '@/utils/orpc-client';
 
 interface CurrentWeatherDisplayProps {
@@ -32,7 +32,7 @@ interface CurrentWeatherDisplayProps {
 export function CurrentWeatherDisplay({
   coordinates,
 }: CurrentWeatherDisplayProps) {
-  const { unit } = useTemperatureUnit();
+  const [unit, setUnit] = useState<'C' | 'F'>('C');
   const { data: user } = authClient.useSession();
   const queryClient = useQueryClient();
 
@@ -49,24 +49,16 @@ export function CurrentWeatherDisplay({
     })
   );
 
-  // Create city object from weather data (includes actual city name)
-  const city = weather
-    ? {
-        id: `${weather.lat},${weather.lon}`,
-        name: weather.name,
-        country: weather.country,
-        state: weather.state,
-        lat: weather.lat,
-        lon: weather.lon,
-      }
-    : {
-        id: `${coordinates.lat},${coordinates.lon}`,
-        name: `${coordinates.lat.toFixed(4)}, ${coordinates.lon.toFixed(4)}`,
-        country: 'Location',
-        state: undefined,
-        lat: coordinates.lat,
-        lon: coordinates.lon,
-      };
+  // For now, create a minimal city object from coordinates
+  // TODO: Add reverse geocoding API to get actual city name
+  const city = {
+    id: `${coordinates.lat},${coordinates.lon}`,
+    name: `${coordinates.lat.toFixed(4)}, ${coordinates.lon.toFixed(4)}`,
+    country: 'Location',
+    state: undefined,
+    lat: coordinates.lat,
+    lon: coordinates.lon,
+  };
 
   const { data: favorites = [] } = useQuery(
     orpc.users.favorites.getFavorites.queryOptions({
@@ -229,9 +221,28 @@ export function CurrentWeatherDisplay({
                   </Button>
                 )}
               </div>
-              <p className="text-muted-foreground">
-                Feels like {displayFeels}°{unit}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="text-muted-foreground">
+                  Feels like {displayFeels}°{unit}
+                </p>
+                <span className="text-muted-foreground">•</span>
+                <div className="inline-flex rounded-md border bg-background p-0.5">
+                  <Button
+                    onClick={() => setUnit('C')}
+                    size="sm"
+                    variant={unit === 'C' ? 'default' : 'ghost'}
+                  >
+                    °C
+                  </Button>
+                  <Button
+                    onClick={() => setUnit('F')}
+                    size="sm"
+                    variant={unit === 'F' ? 'default' : 'ghost'}
+                  >
+                    °F
+                  </Button>
+                </div>
+              </div>
             </div>
           </CardTitle>
         </CardHeader>
