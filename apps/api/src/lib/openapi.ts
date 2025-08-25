@@ -1,5 +1,6 @@
 import { OpenAPIGenerator } from '@orpc/openapi';
 import { ZodToJsonSchemaConverter } from '@orpc/zod/zod4';
+import { env } from '@/env';
 import { appRouter } from '../routers';
 
 const generator = new OpenAPIGenerator({
@@ -10,30 +11,39 @@ export const spec = await generator.generate(appRouter, {
   info: {
     title: 'Weather Dashboard API',
     version: '1.0.0',
-    description: 'A comprehensive weather dashboard API providing real-time weather data, city search, and user favorites management. Built with Hono and ORPC for type-safe, contract-first development.',
+    description:
+      'A comprehensive weather dashboard API providing real-time weather data, city search, and user favorites management. Built with Hono and ORPC for type-safe, contract-first development.',
     contact: {
       name: 'Weather Dashboard',
-      url: 'https://github.com/dawsson/weather-dashboard'
-    }
+      url: 'https://github.com/dawsson/weather-dashboard',
+    },
   },
   servers: [
     {
+      url: `${env.NEXT_PUBLIC_API_URL}/rpc`,
+      description: 'Current server',
+    },
+    {
       url: 'http://localhost:3001/rpc',
-      description: 'Development server'
-    }
+      description: 'Development server',
+    },
+    {
+      url: 'https://weather-api.dawson.gg/rpc',
+      description: 'Production server',
+    },
   ],
   tags: [
     {
       name: 'Health',
-      description: 'System health and status endpoints'
+      description: 'System health and status endpoints',
     },
     {
       name: 'Weather',
-      description: 'Weather data and city search operations'
+      description: 'Weather data and city search operations',
     },
     {
       name: 'User Favorites',
-      description: 'Manage user favorite cities (requires authentication)'
-    }
-  ]
+      description: 'Manage user favorite cities (requires authentication)',
+    },
+  ],
 });
