@@ -1,5 +1,5 @@
 import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from '@orpc/json-schema';
-import { OpenAPIHandler } from '@orpc/openapi/fetch';
+import { CORSPlugin, OpenAPIHandler } from '@orpc/openapi/fetch';
 import { ZodToJsonSchemaConverter } from '@orpc/zod/zod4';
 import { Scalar } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
@@ -14,6 +14,16 @@ import { appRouter } from './routers/index';
 const router = new Hono();
 const handler = new OpenAPIHandler(appRouter, {
   plugins: [
+    new CORSPlugin({
+      origin: env.NODE_ENV === 'development'
+        ? ['http://localhost:3000', 'http://localhost:3001']
+        : [env.NEXT_PUBLIC_WEBSITE_URL, env.NEXT_PUBLIC_API_URL],
+      allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie', 'X-Requested-With', 'Accept', 'Origin'],
+      credentials: true,
+      exposeHeaders: ['Set-Cookie'],
+      maxAge: 600,
+    }),
     new SmartCoercionPlugin({
       schemaConverters: [new ZodToJsonSchemaConverter()],
     }),
@@ -43,29 +53,6 @@ router.use(
   })
 );
 
-// RPC-specific CORS with credentials
-router.use(
-  '/rpc/*',
-  cors({
-    origin:
-      env.NODE_ENV === 'development'
-        ? ['http://localhost:3000', 'http://localhost:3001']
-        : [env.NEXT_PUBLIC_WEBSITE_URL, env.NEXT_PUBLIC_API_URL],
-    credentials: true,
-    allowHeaders: [
-      'Content-Type',
-      'Authorization',
-      'Cookie',
-      'Set-Cookie',
-      'X-Requested-With',
-      'Accept',
-      'Origin',
-    ],
-    allowMethods: ['POST', 'GET', 'OPTIONS', 'PUT', 'DELETE'],
-    exposeHeaders: ['Set-Cookie'],
-    maxAge: 600,
-  })
-);
 
 // General CORS for non-auth routes
 router.use(
