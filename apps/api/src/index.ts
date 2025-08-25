@@ -76,8 +76,16 @@ router.use(
   '*',
   cors({
     origin: env.NEXT_PUBLIC_WEBSITE_URL,
-    allowMethods: ['GET', 'POST', 'OPTIONS'],
-    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'],
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Cookie',
+      'Set-Cookie',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
   })
 );
 
