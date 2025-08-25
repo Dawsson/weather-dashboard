@@ -1,104 +1,191 @@
-# Fullstack Template
+# Weather Dashboard
 
-A modern TypeScript fullstack template, featuring end-to-end type safety, authentication, and a modern development experience.
+A modern full-stack weather dashboard application that allows users to search for cities worldwide and view current weather conditions. Built with TypeScript, featuring real-time weather data, user authentication, and favorite cities management.
 
 ## Features
 
-- **TypeScript** - For type safety and improved developer experience
-- **Next.js** - Full-stack React framework
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **shadcn/ui** - Reusable UI components
-- **Elysia** - Type-safe, high-performance framework
-- **tRPC** - End-to-end type-safe APIs
-- **Bun** - Runtime environment
-- **Mongoose** - TypeScript-first ORM
-- **MongoDB** - Database engine
-- **Authentication** - Email & password authentication with Better Auth
-- **Turborepo** - Optimized monorepo build system
-- **Biome** - Linting and formatting
+### Core Weather Functionality
+- 🌤️ **Real-time Weather Data** - Current conditions from OpenWeatherMap API
+- 🔍 **Smart City Search** - Debounced search with autocomplete suggestions
+- ⭐ **Favorite Cities** - Save and manage your favorite locations
+- 🌡️ **Dual Temperature Units** - Toggle between Celsius and Fahrenheit
+- 📱 **Responsive Design** - Mobile-first responsive interface
 
-## Getting Started
+### Technical Features
+- **TypeScript** - Full type safety across the stack
+- **Next.js 15** - Modern React framework with App Router
+- **Hono + ORPC** - Type-safe API with contract-first development
+- **Better Auth** - Secure authentication with session management
+- **MongoDB + Mongoose** - Document database with type-safe schemas
+- **Redis Caching** - Smart caching for weather data and geocoding
+- **shadcn/ui** - Beautiful, accessible UI components
+- **Docker Ready** - Containerized for easy deployment
 
-First, install the dependencies:
+## Quick Start
+
+### Prerequisites
+- [Bun](https://bun.sh/) runtime
+- [MongoDB](https://www.mongodb.com/) database
+- [Redis](https://redis.io/) for caching
+- [OpenWeatherMap API key](https://openweathermap.org/api)
+
+### Local Development Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd weather-dashboard
+   ```
+
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
+
+3. **Environment Setup**
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and configure all required variables (see Environment Variables section below).
+
+4. **Start development servers**
+   ```bash
+   bun dev
+   ```
+
+5. **Access the application**
+   - Frontend: [http://localhost:3000](http://localhost:3000)
+   - API: [http://localhost:3001](http://localhost:3001)
+   - API Documentation: [http://localhost:3001/docs](http://localhost:3001/docs)
+
+### Using Docker
 
 ```bash
-bun install
+# Start with docker-compose
+docker-compose up --build
+
+# Access the application at http://localhost:3000
 ```
-
-Then, run the development server:
-
-```bash
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) in your browser to see the web application.
-
-The API is running at [http://localhost:3001](http://localhost:3001).
-
 
 ## Project Structure
 
 ```
-fullstack-template/
+weather-dashboard/
 ├── apps/
-│   ├── web/                    # Next.js 15 frontend (App Router)
-│   └── api/                    # Elysia backend with tRPC
+│   ├── web/                    # Next.js 15 frontend
+│   │   ├── src/
+│   │   │   ├── app/           # App Router pages
+│   │   │   ├── components/    # React components  
+│   │   │   └── utils/         # ORPC client setup
+│   │   └── Dockerfile
+│   └── api/                    # Hono backend with ORPC
+│       ├── src/
+│       │   ├── features/      # Feature-based API modules
+│       │   ├── lib/           # Shared utilities
+│       │   └── routers/       # ORPC route definitions
+│       └── Dockerfile
 ├── packages/
-│   ├── database/               # Shared Mongoose models
-│   ├── ui/                     # Shared shadcn/ui components
-│   └── typescript-config/      # Shared TypeScript configs
-└── .cursor/
-    └── rules/                  # Cursor AI rules for development
+│   ├── shared/                # Shared types and contracts
+│   ├── ui/                    # Shared UI components
+│   └── typescript-config/     # TypeScript configurations
+└── docker-compose.yml
 ```
 
 ## Available Scripts
 
+**Development:**
 - `bun dev` - Start all applications in development mode
-- `bun build` - Build all applications for production
-- `turbo dev --filter=@repo/web` - Start only the Next.js frontend
-- `turbo dev --filter=@repo/api` - Start only the Elysia backend
-- `bun check-types` - Run TypeScript checking across monorepo
-- `bun check` - Run Biome formatting and linting
+- `bun format` - Format code with Ultracite
+- `bun lint` - Lint code
+- `bun typecheck` - TypeScript checking across monorepo
 
-## Environment Setup
+**Production:**
+- `bun build` - Build all applications
+- `bun start:web` - Start production web server
+- `bun start:api` - Start production API server
 
-1. Copy `.env.example` to `.env` and configure:
-   ```bash
-   cp .env.example .env
-   ```
+## Environment Variables
 
-2. Required environment variables:
-   - `DATABASE_URL` - MongoDB connection string
-   - `REDIS_URL` - Redis connection string
-   - `BETTER_AUTH_SECRET` - Secret for auth sessions
-   - `NEXT_PUBLIC_WEBSITE_URL` - Frontend URL (dev: http://localhost:3000)
-   - `NEXT_PUBLIC_API_URL` - Backend URL (dev: http://localhost:3001)
+All environment variables are validated using Zod schemas. Copy `.env.example` to `.env` and configure:
 
-## Key Features
+### Required Variables
 
-### Authentication
-- **Better Auth** integration with MongoDB adapter
-- Middleware-based route protection
-- Session management with secure cookies
-- Configurable protected and public routes
+**Database & Caching:**
+- `DATABASE_URL` - MongoDB connection string
+- `REDIS_URL` - Redis connection string for caching
 
-### Type Safety
-- End-to-end type safety from database to frontend
-- tRPC for type-safe API calls
-- Zod validation for environment variables and API inputs
-- Shared TypeScript configurations
+**Authentication:**
+- `BETTER_AUTH_SECRET` - Secret for auth sessions (generate with `openssl rand -base64 32`)
 
-### Development Experience
-- Hot reload for both frontend and backend
-- Biome for fast formatting and linting
-- Turborepo for optimized monorepo builds
-- Cursor AI rules for intelligent code assistance
+**Weather API:**
+- `OPENWEATHERMAP_API_KEY` - API key from [OpenWeatherMap](https://openweathermap.org/api)
+
+**Application URLs:**
+- `NEXT_PUBLIC_WEBSITE_URL` - Frontend URL (dev: `http://localhost:3000`)
+- `NEXT_PUBLIC_API_URL` - Backend URL (dev: `http://localhost:3001`)
+- `NEXT_PUBLIC_PROJECT_NAME` - Application name for branding
+- `NEXT_PUBLIC_HOSTNAME` - Application hostname
+- `NEXT_PUBLIC_NODE_ENV` - Environment (`development` or `production`)
+
+### Optional Variables (Production)
+- `AZURE_COMMUNICATION_CONNECTION_STRING` - For email notifications
+- `EMAIL_FROM` - From address for system emails
+
+## API Documentation
+
+The API provides comprehensive OpenAPI documentation:
+
+- **Interactive Documentation**: [http://localhost:3001/docs](http://localhost:3001/docs) (Scalar UI)
+- **OpenAPI JSON**: [http://localhost:3001/openapi.json](http://localhost:3001/openapi.json)
+
+### Key API Endpoints
+
+**Weather:**
+- `GET /weather/current` - Get current weather for coordinates
+- `GET /weather/search` - Search cities by name
+
+**Favorites:**
+- `GET /users/favorites` - Get user's favorite cities
+- `POST /users/favorites` - Add city to favorites
+- `DELETE /users/favorites/{id}` - Remove from favorites
+
+**Authentication:**
+- `POST /auth/sign-up` - Create new account
+- `POST /auth/sign-in` - Sign in to account
+- `POST /auth/sign-out` - Sign out
 
 ## Architecture
 
-- **Frontend**: Next.js 15 with App Router, shadcn/ui components
-- **Backend**: Elysia server with tRPC integration
-- **Database**: MongoDB with Mongoose ODM
-- **Auth**: Better Auth with session-based authentication
-- **Styling**: TailwindCSS with automatic class sorting
-- **Monorepo**: Turborepo with shared packages for code reuse
+### Frontend (Next.js 15)
+- **App Router** with TypeScript
+- **ORPC Client** for type-safe API calls
+- **shadcn/ui** components with Tailwind CSS
+- **Better Auth** React client for authentication
+- **Responsive design** with mobile-first approach
+
+### Backend (Hono + ORPC)
+- **Contract-first API** development with ORPC
+- **Feature-based architecture** in `/src/features/`
+- **Better Auth** for session management
+- **Redis caching** for weather data (1 hour) and geocoding (24 hours)
+- **Zod validation** for all inputs and environment variables
+
+### Database & Caching
+- **MongoDB** with Mongoose ODM for user data and favorites
+- **Redis** for intelligent caching of API responses
+- **Type-safe schemas** with Zod integration
+
+### Deployment
+- **Docker** containerization with multi-stage builds
+- **Docker Compose** for local development
+- **Environment variable validation** prevents runtime errors
+
+## Development Guidelines
+
+This project follows modern full-stack development patterns:
+
+- **Type Safety**: End-to-end TypeScript with ORPC contracts
+- **Error Handling**: Graceful error boundaries and API error responses  
+- **Performance**: Smart caching and optimized React rendering
+- **Security**: Input validation, secure authentication, and environment variable protection
+- **Code Quality**: Ultracite formatting, TypeScript strict mode, and monorepo architecture

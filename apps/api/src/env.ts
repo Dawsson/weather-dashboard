@@ -26,11 +26,11 @@ export const env = createEnv({
   clientPrefix: 'NEXT_PUBLIC_',
 
   client: {
-    NEXT_PUBLIC_API_URL: z.string().min(1),
-    NEXT_PUBLIC_WEBSITE_URL: z.string().min(1),
-    NEXT_PUBLIC_PROJECT_NAME: z.string().min(1),
-    NEXT_PUBLIC_HOSTNAME: z.string().min(1),
-    NEXT_PUBLIC_NODE_ENV: z.enum(['development', 'production']),
+    NEXT_PUBLIC_API_URL: z.string().min(1).default('http://localhost:3001'),
+    NEXT_PUBLIC_WEBSITE_URL: z.string().min(1).default('http://localhost:3000'),
+    NEXT_PUBLIC_PROJECT_NAME: z.string().min(1).default('Weather Dashboard'),
+    NEXT_PUBLIC_HOSTNAME: z.string().min(1).default('localhost'),
+    NEXT_PUBLIC_NODE_ENV: z.enum(['development', 'production']).default('development'),
   },
 
   runtimeEnv: Bun.env,
