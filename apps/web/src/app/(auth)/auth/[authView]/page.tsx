@@ -1,18 +1,11 @@
+'use client';
+
 import { AuthView } from '@daveyplate/better-auth-ui';
-import { authViewPaths } from '@daveyplate/better-auth-ui/server';
 import { cn } from '@repo/ui/lib/utils';
-// import { AuthView } from '@/app/(auth)/auth/[pathname]/view';
+import { useParams } from 'next/navigation';
 
-export function generateStaticParams() {
-  return Object.values(authViewPaths).map((pathname) => ({ pathname }));
-}
-
-export default async function AuthPage({
-  params,
-}: {
-  params: Promise<{ authView: string }>;
-}) {
-  const { authView } = await params;
+export default function AuthPage() {
+  const { authView } = useParams<{ authView: string }>();
 
   const small = ['sign-in', 'sign-up', 'forgot-password'];
 
@@ -45,7 +38,7 @@ export default async function AuthPage({
         small.includes(authView) && 'w-full max-w-xl'
       )}
     >
-      <AuthView cardHeader={cardHeader()} pathname={authView} />
+      <AuthView cardHeader={cardHeader()} pathname={authView} searchp />
     </main>
   );
 }
