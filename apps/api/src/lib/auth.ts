@@ -2,7 +2,6 @@ import { betterAuth } from 'better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { env } from '@/env';
 import { database } from '@/shared/database';
-import { sendResetPasswordEmail, sendVerificationEmail } from './email';
 
 const db = database.getClient().db();
 
@@ -11,35 +10,6 @@ export const auth = betterAuth({
 
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
-    sendResetPassword: async ({ user, token }) => {
-      const resetUrl = `${env.NEXT_PUBLIC_WEBSITE_URL}/auth/reset-password?token=${token}`;
-      const result = await sendResetPasswordEmail({
-        email: user.email,
-        verificationUrl: resetUrl,
-      });
-
-      if (result.error) {
-        // Log error but don't throw - email sending is not critical
-      }
-    },
-  },
-
-  emailVerification: {
-    sendOnSignUp: true,
-    expiresIn: 60 * 60 * 1, // 1 HOUR
-    autoSignInAfterVerification: true,
-    sendVerificationEmail: async ({ user, token }) => {
-      const verificationUrl = `${env.NEXT_PUBLIC_WEBSITE_URL}/?email=${token}`;
-      try {
-        await sendVerificationEmail({
-          email: user.email,
-          verificationUrl,
-        });
-      } catch (_error) {
-        // Log error but don't throw - email sending is not critical
-      }
-    },
   },
 
   trustedOrigins: [env.NEXT_PUBLIC_WEBSITE_URL],
