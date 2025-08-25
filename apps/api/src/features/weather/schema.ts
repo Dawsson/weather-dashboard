@@ -55,6 +55,10 @@ export const WeatherDataSchema = z.object({
   timezone_offset: z.number(),
   current: CurrentWeatherSchema,
   alerts: z.array(WeatherAlertSchema).optional(),
+  // Location information
+  name: z.string(), // City name
+  country: z.string(), // Country code
+  state: z.string().optional(), // State/region (if available)
 });
 
 // City search result schema

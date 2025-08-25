@@ -2,15 +2,9 @@
 
 import { UserButton } from '@daveyplate/better-auth-ui';
 import { Button } from '@repo/ui/components/button';
-import { Cloud, LayoutDashboard } from 'lucide-react';
+import { Cloud } from 'lucide-react';
 import Link from 'next/link';
-import { ThemeSwitcher } from '@/components/theme-switcher';
-import { env } from '@/env';
-
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/about', label: 'About' },
-];
+import { ModeToggle } from '@/components/mode-toggle';
 
 export default function Header({
   isAuthenticated,
@@ -39,21 +33,11 @@ export default function Header({
           </div>
         </Link>
 
-        {/* Right: Controls (minimal) */}
+        {/* Right: Controls */}
         <div className="flex items-center gap-2">
-          <ThemeSwitcher />
+          <ModeToggle />
           {isAuthenticated ? (
-            <UserButton
-              additionalLinks={[
-                {
-                  href: '/dashboard',
-                  label: 'Dashboard',
-                  icon: <LayoutDashboard className="h-4 w-4" />,
-                },
-              ]}
-              align="end"
-              size={'icon'}
-            />
+            <UserButton align="end" size={'icon'} />
           ) : (
             <Button asChild size="sm" variant="outline">
               <Link href="/auth/sign-in">Sign in</Link>

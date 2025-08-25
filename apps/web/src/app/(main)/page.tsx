@@ -1,11 +1,26 @@
-import { WeatherDashboard } from './dashboard/components/weather-dashboard';
-import { EmailVerificationHandler } from './email-verification-handler';
+'use client';
+
+import { parseAsFloat, useQueryState } from 'nuqs';
+import { FavoritesSection } from '@/components/weather/favorites-section';
+import { WeatherDashboard } from '@/components/weather/weather-dashboard';
 
 export default function Home() {
+  const [lat, setLat] = useQueryState('lat', parseAsFloat);
+  const [lon, setLon] = useQueryState('lon', parseAsFloat);
+
+  const handleFavoriteCitySelect = (city: {
+    lat: number;
+    lon: number;
+    name: string;
+    country: string;
+    state?: string;
+  }) => {
+    setLat(city.lat);
+    setLon(city.lon);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <EmailVerificationHandler />
-
       {/* Hero */}
       <section className="relative overflow-hidden border-b">
         <div className="-z-10 pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,theme(colors.primary/10),transparent_50%)]" />
@@ -26,9 +41,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Content */}
+      {/* Favorites and Content */}
       <section className="container mx-auto max-w-5xl px-4 py-12 sm:py-16">
-        {/* The dashboard renders search + results; keep section for spacing */}
+        <div className="space-y-8">
+          <FavoritesSection onCitySelect={handleFavoriteCitySelect} />
+        </div>
       </section>
     </div>
   );

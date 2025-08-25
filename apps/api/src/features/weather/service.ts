@@ -58,6 +58,10 @@ export class WeatherService {
         lon: Number(rawData.coord.lon),
         timezone: 'UTC',
         timezone_offset: 0,
+        // Location information from API response
+        name: rawData.name || 'Unknown Location',
+        country: rawData.sys?.country || 'XX',
+        state: undefined, // OpenWeather current weather API doesn't include state
         current: {
           dt: Number(rawData.dt),
           sunrise: rawData.sys?.sunrise

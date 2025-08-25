@@ -20,7 +20,7 @@ import {
   Thermometer,
   Wind,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { authClient } from '@/lib/auth-client';
 import { orpc } from '@/utils/orpc-client';
@@ -49,16 +49,24 @@ export function CurrentWeatherDisplay({
     })
   );
 
-  // For now, create a minimal city object from coordinates
-  // TODO: Add reverse geocoding API to get actual city name
-  const city = {
-    id: `${coordinates.lat},${coordinates.lon}`,
-    name: `${coordinates.lat.toFixed(4)}, ${coordinates.lon.toFixed(4)}`,
-    country: 'Location',
-    state: undefined,
-    lat: coordinates.lat,
-    lon: coordinates.lon,
-  };
+  // Create city object from weather data (includes actual city name)
+  const city = weather
+    ? {
+        id: `${weather.lat},${weather.lon}`,
+        name: weather.name,
+        country: weather.country,
+        state: weather.state,
+        lat: weather.lat,
+        lon: weather.lon,
+      }
+    : {
+        id: `${coordinates.lat},${coordinates.lon}`,
+        name: `${coordinates.lat.toFixed(4)}, ${coordinates.lon.toFixed(4)}`,
+        country: 'Location',
+        state: undefined,
+        lat: coordinates.lat,
+        lon: coordinates.lon,
+      };
 
   const { data: favorites = [] } = useQuery(
     orpc.users.favorites.getFavorites.queryOptions({
