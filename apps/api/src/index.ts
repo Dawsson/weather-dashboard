@@ -50,7 +50,7 @@ router.use(
     origin:
       env.NODE_ENV === 'development'
         ? ['http://localhost:3000', 'http://localhost:3001']
-        : env.NEXT_PUBLIC_WEBSITE_URL,
+        : [env.NEXT_PUBLIC_WEBSITE_URL, env.NEXT_PUBLIC_API_URL],
     credentials: true,
     allowHeaders: [
       'Content-Type',
