@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next';
-import { env } from '@/env';
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@repo/ui'],
@@ -13,7 +12,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/docs/:path*',
-        destination: `${env.NEXT_PUBLIC_API_URL}/docs/:path*`,
+        destination: `${process.env.NEXT_PUBLIC_API_URL}/docs/:path*`,
       },
     ];
   },
