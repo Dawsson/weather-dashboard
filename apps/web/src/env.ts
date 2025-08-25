@@ -15,7 +15,6 @@ export const env = createEnv({
     NEXT_PUBLIC_WEBSITE_URL: z.string().min(1).default('http://localhost:3000'),
     NEXT_PUBLIC_PROJECT_NAME: z.string().min(1).default('Weather Dashboard'),
     NEXT_PUBLIC_HOSTNAME: z.string().min(1).default('localhost'),
-    NEXT_PUBLIC_DISCORD_INVITE: z.url().optional(),
     NEXT_PUBLIC_NODE_ENV: z.enum(['development', 'production']).default('development'),
   },
 
@@ -29,7 +28,6 @@ export const env = createEnv({
     NEXT_PUBLIC_WEBSITE_URL: process.env.NEXT_PUBLIC_WEBSITE_URL,
     NEXT_PUBLIC_PROJECT_NAME: process.env.NEXT_PUBLIC_PROJECT_NAME,
     NEXT_PUBLIC_HOSTNAME: process.env.NEXT_PUBLIC_HOSTNAME,
-    NEXT_PUBLIC_DISCORD_INVITE: process.env.NEXT_PUBLIC_DISCORD_INVITE,
     NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
   },
 

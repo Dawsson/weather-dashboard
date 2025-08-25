@@ -30,7 +30,7 @@ export const Footer = () => {
         </Link>
         <Link
           className="px-2 text-sm underline underline-offset-4 hover:no-underline"
-          href={env.NEXT_PUBLIC_DISCORD_INVITE}
+          href={"https://wip.group/contact"}
         >
           Contact Us
         </Link>
