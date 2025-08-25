@@ -13,35 +13,11 @@ import { createContext } from './lib/context';
 import { appRouter } from './routers/index';
 
 const router = new Hono();
+router.use('/*', cors());
+
 const handler = new OpenAPIHandler(appRouter, {
   plugins: [
-    new CORSPlugin({
-      origin:
-        env.NODE_ENV === 'development'
-          ? ['http://localhost:3000', 'http://localhost:3001']
-          : [env.NEXT_PUBLIC_WEBSITE_URL, env.NEXT_PUBLIC_API_URL],
-      allowMethods: [
-        'GET',
-        'HEAD',
-        'PUT',
-        'POST',
-        'DELETE',
-        'PATCH',
-        'OPTIONS',
-      ],
-      allowHeaders: [
-        'Content-Type',
-        'Authorization',
-        'Cookie',
-        'Set-Cookie',
-        'X-Requested-With',
-        'Accept',
-        'Origin',
-      ],
-      credentials: true,
-      exposeHeaders: ['Set-Cookie'],
-      maxAge: 600,
-    }),
+
     new SmartCoercionPlugin({
       schemaConverters: [new ZodToJsonSchemaConverter()],
     }),
@@ -72,22 +48,6 @@ router.use(
 );
 
 // General CORS for non-auth routes
-router.use(
-  '*',
-  cors({
-    origin: env.NEXT_PUBLIC_WEBSITE_URL,
-    allowMethods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'],
-    allowHeaders: [
-      'Content-Type',
-      'Authorization',
-      'Cookie',
-      'Set-Cookie',
-      'X-Requested-With',
-      'Accept',
-      'Origin',
-    ],
-  })
-);
 
 // Better Auth routes
 router.on(['POST', 'GET', 'PUT', 'DELETE'], '/api/auth/*', (c) => {
