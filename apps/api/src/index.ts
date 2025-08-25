@@ -13,7 +13,9 @@ import { createContext } from './lib/context';
 import { appRouter } from './routers/index';
 
 const router = new Hono();
-router.use('/*', cors());
+router.use('/*', cors({
+  origin: env.NEXT_PUBLIC_WEBSITE_URL,
+}));
 
 const handler = new OpenAPIHandler(appRouter, {
   plugins: [
