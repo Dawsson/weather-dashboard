@@ -5,8 +5,8 @@ import { FavoritesSection } from '@/components/weather/favorites-section';
 import { WeatherDashboard } from '@/components/weather/weather-dashboard';
 
 export default function Home() {
-  const [lat, setLat] = useQueryState('lat', parseAsFloat);
-  const [lon, setLon] = useQueryState('lon', parseAsFloat);
+  const [_lat, setLat] = useQueryState('lat', parseAsFloat);
+  const [_lon, setLon] = useQueryState('lon', parseAsFloat);
 
   const handleFavoriteCitySelect = (city: {
     lat: number;

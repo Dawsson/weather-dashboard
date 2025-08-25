@@ -7,8 +7,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
-import { authClient } from '@/lib/auth-client';
 import { TemperatureUnitProvider } from '@/hooks/use-temperature-unit';
+import { authClient } from '@/lib/auth-client';
 import { ThemeProvider } from './theme-provider';
 
 function makeQueryClient() {

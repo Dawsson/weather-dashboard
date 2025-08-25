@@ -10,7 +10,9 @@ interface TemperatureUnitContext {
   toggleUnit: () => void;
 }
 
-const TemperatureUnitContext = createContext<TemperatureUnitContext | null>(null);
+const TemperatureUnitContext = createContext<TemperatureUnitContext | null>(
+  null
+);
 
 export function TemperatureUnitProvider({
   children,
@@ -21,7 +23,9 @@ export function TemperatureUnitProvider({
 
   // Load unit preference from localStorage on mount
   useEffect(() => {
-    const savedUnit = localStorage.getItem('temperature-unit') as TemperatureUnit | null;
+    const savedUnit = localStorage.getItem(
+      'temperature-unit'
+    ) as TemperatureUnit | null;
     if (savedUnit && (savedUnit === 'C' || savedUnit === 'F')) {
       setUnitState(savedUnit);
     }
@@ -48,7 +52,9 @@ export function TemperatureUnitProvider({
 export function useTemperatureUnit() {
   const context = useContext(TemperatureUnitContext);
   if (!context) {
-    throw new Error('useTemperatureUnit must be used within a TemperatureUnitProvider');
+    throw new Error(
+      'useTemperatureUnit must be used within a TemperatureUnitProvider'
+    );
   }
   return context;
 }

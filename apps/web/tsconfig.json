@@ -29,9 +29,7 @@
     "./**/*.tsx",
     "./.next/types/**/*.ts",
     "./next-env.d.ts",
-    ".next/types/**/*.ts",
-    "../api/src/lib/orpc.ts",
-    "src/app/(auth)/auth/[authView]/view.tsx.old"
+    ".next/types/**/*.ts"
   ],
   "exclude": ["./node_modules"],
   "references": [

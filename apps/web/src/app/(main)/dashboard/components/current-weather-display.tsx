@@ -126,7 +126,7 @@ export function CurrentWeatherDisplay({
             <div className="animate-pulse space-y-6">
               <div className="h-16 w-1/2 rounded bg-gray-200" />
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                {[...Array(4)].map((_, i) => (
+                {[...new Array(4)].map((_, i) => (
                   <div className="h-12 rounded bg-gray-200" key={i} />
                 ))}
               </div>

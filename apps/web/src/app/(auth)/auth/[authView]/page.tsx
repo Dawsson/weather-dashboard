@@ -17,7 +17,7 @@ export default async function AuthPage({
   const small = ['sign-in', 'sign-up', 'forgot-password'];
 
   const isSignUp = authView === 'sign-up';
-  const isSettings = ['security', 'settings'].includes(authView);
+  const _isSettings = ['security', 'settings'].includes(authView);
 
   const cardHeader = () => {
     if (['sign-in', 'sign-up'].includes(authView)) {

@@ -19,8 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: `${env.NEXT_PUBLIC_PROJECT_NAME} - Short Tagline`,
-  description: 'Short Description',
+  title: `${env.NEXT_PUBLIC_PROJECT_NAME} Dashboard`,
+  description:
+    'Get clean, real-time weather conditions for any city worldwide without the clutter.',
 };
 
 export default async function RootLayout({

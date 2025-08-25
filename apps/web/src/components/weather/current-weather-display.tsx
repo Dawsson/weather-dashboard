@@ -21,8 +21,8 @@ import {
   Wind,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { authClient } from '@/lib/auth-client';
 import { useTemperatureUnit } from '@/hooks/use-temperature-unit';
+import { authClient } from '@/lib/auth-client';
 import { orpc } from '@/utils/orpc-client';
 
 interface CurrentWeatherDisplayProps {
@@ -122,21 +122,76 @@ export function CurrentWeatherDisplay({
 
   if (isLoading) {
     return (
-      <div className="mx-auto max-w-4xl">
-        <Card className="h-96">
-          <CardHeader>
-            <div className="animate-pulse">
-              <div className="mb-2 h-6 w-1/2 rounded bg-gray-200" />
-              <div className="h-4 w-1/3 rounded bg-gray-200" />
-            </div>
+      <div className="mx-auto max-w-6xl space-y-8">
+        <Card className="overflow-hidden">
+          <CardHeader className="border-b">
+            <CardTitle className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="animate-pulse">
+                <div className="mb-2 h-8 w-48 rounded bg-muted sm:h-10" />
+                <div className="h-4 w-32 rounded bg-muted" />
+              </div>
+              <div className="flex flex-col items-start gap-2 sm:items-end">
+                <div className="flex items-center gap-3">
+                  <div className="h-14 w-24 animate-pulse rounded bg-muted sm:h-16 sm:w-28" />
+                  {user && (
+                    <div className="mt-2 h-8 w-8 animate-pulse rounded bg-muted" />
+                  )}
+                </div>
+                <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+              </div>
+            </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="animate-pulse space-y-6">
-              <div className="h-16 w-1/2 rounded bg-gray-200" />
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                {[...Array(4)].map((_, i) => (
-                  <div className="h-12 rounded bg-gray-200" key={i} />
-                ))}
+          <CardContent className="space-y-8 pt-6">
+            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+              <div className="animate-pulse text-center sm:text-left">
+                <div className="mb-1 h-7 w-40 rounded bg-muted" />
+                <div className="h-4 w-36 rounded bg-muted" />
+              </div>
+              <div className="hidden items-center gap-3 sm:flex">
+                <div className="animate-pulse rounded-full bg-muted p-3">
+                  <div className="h-6 w-6 rounded bg-muted-foreground/20" />
+                </div>
+                <div className="animate-pulse rounded-full bg-muted p-3">
+                  <div className="h-6 w-6 rounded bg-muted-foreground/20" />
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+              {[...new Array(4)].map((_, i) => (
+                <div
+                  className="flex items-center gap-4 rounded-lg border bg-card p-4"
+                  key={i}
+                >
+                  <div className="animate-pulse rounded-full bg-muted p-2.5">
+                    <div className="h-6 w-6 rounded bg-muted-foreground/20" />
+                  </div>
+                  <div className="flex-1 animate-pulse">
+                    <div className="mb-1 h-3 w-16 rounded bg-muted" />
+                    <div className="h-5 w-12 rounded bg-muted" />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 rounded-lg border bg-card p-4 sm:grid-cols-2">
+              <div className="flex items-center gap-4">
+                <div className="animate-pulse rounded-full bg-muted p-2.5">
+                  <div className="h-6 w-6 rounded bg-muted-foreground/20" />
+                </div>
+                <div className="animate-pulse">
+                  <div className="mb-1 h-3 w-12 rounded bg-muted" />
+                  <div className="h-5 w-16 rounded bg-muted" />
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="animate-pulse rounded-full bg-muted p-2.5">
+                  <div className="h-6 w-6 rounded bg-muted-foreground/20" />
+                </div>
+                <div className="animate-pulse">
+                  <div className="mb-1 h-3 w-12 rounded bg-muted" />
+                  <div className="h-5 w-16 rounded bg-muted" />
+                </div>
               </div>
             </div>
           </CardContent>
