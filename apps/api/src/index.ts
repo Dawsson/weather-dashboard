@@ -1,5 +1,6 @@
 import { experimental_SmartCoercionPlugin as SmartCoercionPlugin } from '@orpc/json-schema';
-import { CORSPlugin, OpenAPIHandler } from '@orpc/openapi/fetch';
+import { OpenAPIHandler } from '@orpc/openapi/fetch';
+import { CORSPlugin } from '@orpc/server/plugins';
 import { ZodToJsonSchemaConverter } from '@orpc/zod/zod4';
 import { Scalar } from '@scalar/hono-api-reference';
 import { Hono } from 'hono';
@@ -15,11 +16,28 @@ const router = new Hono();
 const handler = new OpenAPIHandler(appRouter, {
   plugins: [
     new CORSPlugin({
-      origin: env.NODE_ENV === 'development'
-        ? ['http://localhost:3000', 'http://localhost:3001']
-        : [env.NEXT_PUBLIC_WEBSITE_URL, env.NEXT_PUBLIC_API_URL],
-      allowMethods: ['GET', 'HEAD', 'PUT', 'POST', 'DELETE', 'PATCH', 'OPTIONS'],
-      allowHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie', 'X-Requested-With', 'Accept', 'Origin'],
+      origin:
+        env.NODE_ENV === 'development'
+          ? ['http://localhost:3000', 'http://localhost:3001']
+          : [env.NEXT_PUBLIC_WEBSITE_URL, env.NEXT_PUBLIC_API_URL],
+      allowMethods: [
+        'GET',
+        'HEAD',
+        'PUT',
+        'POST',
+        'DELETE',
+        'PATCH',
+        'OPTIONS',
+      ],
+      allowHeaders: [
+        'Content-Type',
+        'Authorization',
+        'Cookie',
+        'Set-Cookie',
+        'X-Requested-With',
+        'Accept',
+        'Origin',
+      ],
       credentials: true,
       exposeHeaders: ['Set-Cookie'],
       maxAge: 600,
@@ -52,7 +70,6 @@ router.use(
     maxAge: 600,
   })
 );
-
 
 // General CORS for non-auth routes
 router.use(
