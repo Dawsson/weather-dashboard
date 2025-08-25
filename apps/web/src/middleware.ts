@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { env } from '@/env';
 
 // Configuration for middleware features
 const MIDDLEWARE_CONFIG = {
@@ -64,7 +63,7 @@ export function middleware(request: NextRequest) {
 
   // Check for auth session
   const sessionToken = request.cookies.get(
-    `${env.NEXT_PUBLIC_PROJECT_NAME}.session_token`
+    `${process.env.NEXT_PUBLIC_PROJECT_NAME}.session_token`
   )?.value;
   const isAuthenticated = !!sessionToken;
 
