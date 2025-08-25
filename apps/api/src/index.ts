@@ -13,13 +13,28 @@ import { createContext } from './lib/context';
 import { appRouter } from './routers/index';
 
 const router = new Hono();
-router.use('/*', cors({
-  origin: env.NEXT_PUBLIC_WEBSITE_URL,
-}));
+router.use(
+  '/*',
+  cors({
+    origin: env.NEXT_PUBLIC_WEBSITE_URL,
+    credentials: true,
+    allowHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Cookie',
+      'Set-Cookie',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
+    allowMethods: ['GET', 'POST', 'OPTIONS', 'PUT', 'DELETE', 'PATCH'],
+    exposeHeaders: ['Set-Cookie'],
+    maxAge: 600,
+  })
+);
 
 const handler = new OpenAPIHandler(appRouter, {
   plugins: [
-
     new SmartCoercionPlugin({
       schemaConverters: [new ZodToJsonSchemaConverter()],
     }),
