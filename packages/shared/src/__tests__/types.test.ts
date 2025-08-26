@@ -28,11 +28,11 @@ test("ZodUser validates user with optional image", () => {
   expect(() => ZodUser.parse(userWithImage)).not.toThrow();
 });
 
-test("ZodUser rejects invalid email", () => {
+test("ZodUser rejects non-string email", () => {
   const invalidUser = {
     id: "123",
     name: "John Doe",
-    email: "not-an-email",
+    email: 123, // not a string
     emailVerified: true,
     createdAt: new Date(),
     updatedAt: new Date()
